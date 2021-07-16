@@ -34,53 +34,73 @@ public:
 
 int main()
 {
-	CMyVector<CMyVector<int>> mVMaster;
-	CMyVector<int> mVectorA;
-	CMyVector<int> mVectorB;
-	CMyVector<int> mVectorC;
+	CMyVector<std::string> mVstring;
+	CMyVector<std::string> mVstringB;
 
-	//mVMaster.reserve(8);
+	mVstring.push_back("abcd");
+	mVstring.push_back("abcde");
+	mVstring.push_back("abcdf");
+	mVstring.push_back("abcdg");
+	mVstring.push_back("abcdh");
+	mVstringB.push_back("aaaa");
+	mVstring.insert(mVstring.begin(), "abcdefg");
 
-	mVectorA.push_back(10);
-	mVectorA.push_back(20);
-	mVectorA.push_back(30);
-	mVectorA.push_back(40);
+	mVstringB = std::move(mVstring);
+	
+	//mVstring.clear();
+	cout << "size : " << mVstringB.size() << " cap : " << mVstringB.capacity() << endl;
+	for (size_t i = 0; i < mVstringB.size(); ++i)
+	{
+		cout << mVstringB[i] << endl;
+	}
 
-	mVectorB.push_back(1);
-	mVectorB.push_back(2);
-	mVectorB.push_back(3);
-	mVectorB.push_back(4);
-	mVectorB.push_back(5);
-	mVectorB.push_back(6);
-	mVectorB.push_back(7);
-	mVectorB.push_back(8);
+	//CMyVector<CMyVector<int>> mVMaster;
+	//CMyVector<int> mVectorA;
+	//CMyVector<int> mVectorB;
+	//CMyVector<int> mVectorC;
 
-	mVectorC.push_back(100);
-	mVectorC.push_back(200);
-	mVectorC.push_back(300);
-	mVectorC.push_back(400);
-	mVectorC.push_back(500);
-	mVectorC.push_back(600);
-	mVectorC.push_back(700);
-	mVectorC.push_back(800);
-	mVectorC.push_back(900);
-	mVectorC.push_back(1000);
-	mVectorC.push_back(1100);
-	mVectorC.push_back(1200);
+	////mVMaster.reserve(8);
 
-	mVMaster.push_back(mVectorA);
-	mVMaster.push_back(mVectorB);
-	mVMaster.push_back(mVectorC);
-	mVMaster.resize(5,mVectorC);
+	//mVectorA.push_back(10);
+	//mVectorA.push_back(20);
+	//mVectorA.push_back(30);
+	//mVectorA.push_back(40);
 
-	cout << mVMaster[0][0] << endl;
-	cout << mVMaster[1][1] << endl;
-	cout << mVMaster[2][10] << endl;
-	cout << mVMaster[4][10] << endl;
-	mVMaster[4][1] = 1;
-	cout << mVMaster[2][1] << endl;
-	cout << mVMaster[4][1] << endl;
-	mVMaster.resize(2);
+	//mVectorB.push_back(1);
+	//mVectorB.push_back(2);
+	//mVectorB.push_back(3);
+	//mVectorB.push_back(4);
+	//mVectorB.push_back(5);
+	//mVectorB.push_back(6);
+	//mVectorB.push_back(7);
+	//mVectorB.push_back(8);
+
+	//mVectorC.push_back(100);
+	//mVectorC.push_back(200);
+	//mVectorC.push_back(300);
+	//mVectorC.push_back(400);
+	//mVectorC.push_back(500);
+	//mVectorC.push_back(600);
+	//mVectorC.push_back(700);
+	//mVectorC.push_back(800);
+	//mVectorC.push_back(900);
+	//mVectorC.push_back(1000);
+	//mVectorC.push_back(1100);
+	//mVectorC.push_back(1200);
+
+	//mVMaster.push_back(mVectorA);
+	//mVMaster.push_back(mVectorB);
+	//mVMaster.push_back(mVectorC);
+	//mVMaster.resize(5,mVectorC);
+
+	//cout << mVMaster[0][0] << endl;
+	//cout << mVMaster[1][1] << endl;
+	//cout << mVMaster[2][10] << endl;
+	//cout << mVMaster[4][10] << endl;
+	//mVMaster[4][1] = 1;
+	//cout << mVMaster[2][1] << endl;
+	//cout << mVMaster[4][1] << endl;
+	//mVMaster.resize(2);
 
 	//CMyVector<TestType> mVector;
 	//CMyVector<TestType> mVectorB;
@@ -123,6 +143,8 @@ int main()
 	//{
 	//	mVectorB[i].print();
 	//}
+	vector<int> arr;
+	arr.clear();
 
 	return 0;
 }

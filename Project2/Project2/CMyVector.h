@@ -1,13 +1,15 @@
 #pragma once
 
 #include <string>
-#include <iostream>
+#include <xmemory>
 
 using namespace std;
 
 template <typename T>
 class CMyVector
 {
+	//using pointer = typename T::const_pointer;
+
 //열거자
 public:
 	template <typename T>
@@ -23,25 +25,17 @@ public:
 		{
 			cur = p;
 		}
+
 		iterator& operator ++ ()
 		{
-			//if (operator == (CMyVector<T>.end()))
-			//{
-			//	return *this;
-			//}
 			++cur;
-			//cur = cur + 1;
 
 			return *this;
 		}
+
 		iterator& operator -- ()
 		{
-			//if (operator == (CMyVector<T>.begin()))
-			//{
-			//	return *this;
-			//}
 			--cur;
-			//cur = cur - 1;
 
 			return *this;
 		}
@@ -59,22 +53,20 @@ public:
 		{
 			return cur != ref.cur;
 		}
-
-
 	};
 
 	//생성자 & 소멸자
 public:
-	CMyVector();												//1
+	CMyVector();												 //1
 	//CMyVector(size_t count, const T& value, 
-	//const Allocator& alloc = Allocator())						//2 : Allocator기반이라 무시
-	CMyVector(size_t count, const T& value);					//3
-	CMyVector(size_t count);									//4
-	CMyVector(T first, T last) = delete;						//5 : integral type 타입일시 [fisrt, last). 미구현
-	CMyVector(const CMyVector& other);							//6
-	//CMyVector(const CMyVector& other, const Allocator& alloc);//7 : Allocator기반이라 무시
-	CMyVector(CMyVector&& other);								//8
-	//CMyVector(CMyVector&& other, const Allocator& alloc);		//9 : Allocator기반이라 무시
+	//const Allocator& alloc = Allocator())						 //2 : Allocator기반이라 무시
+	CMyVector(size_t count, const T& value);					 //3
+	CMyVector(size_t count);									 //4
+	CMyVector(T first, T last) = delete;						 //5 : integral type 타입일시 [fisrt, last). 미구현
+	CMyVector(const CMyVector& other);							 //6
+	//CMyVector(const CMyVector& other, const Allocator& alloc); //7 : Allocator기반이라 무시
+	CMyVector(CMyVector&& other);								 //8
+	//CMyVector(CMyVector&& other, const Allocator& alloc);		 //9 : Allocator기반이라 무시
 	//10번은 이해못했음 + Allocator 기반이라 패스
 	
 	~CMyVector();
@@ -84,22 +76,28 @@ public:
 		clear();
 
 		_tData = new T[other._capacity];
-		memcpy_s(_tData, sizeof(T) * other._size, other._tData, sizeof(T) * other._size);
+
+		for (size_t i = 0; i < other._capacity; ++i)
+		{
+			_tData[i] = T(other._tData[i]);
+		}
+
+		//memcpy_s(_tData, sizeof(T) * other._size, other._tData, sizeof(T) * other._size);
 		_size = other._size;
 		_capacity = other._capacity;
 
 		return *this;
 
 	};		//복사
+
 	CMyVector& operator = (CMyVector&& other) noexcept
 	{
 		clear();
 
-		_tData = other._tData;		
+		_tData = std::move(other._tData);
 		_size = other._size;
 		_capacity = other._capacity;
 
-		other._tData = nullptr;
 		//other.~CMyVector();						//이래도 됨?
 		other.clear();
 
@@ -142,7 +140,7 @@ public:
 
 	//데이터 추가,삭제
 public :
-	void clear();
+	void clear() noexcept;
 
 	//열거자 방식 함수들
 	///삽입 연산자
@@ -443,19 +441,12 @@ inline void CMyVector<T>::swap(CMyVector& other)
 }
 
 template<typename T>
-inline void CMyVector<T>::clear()
+inline void CMyVector<T>::clear() noexcept
 {
-	if (_tData == nullptr)
-	{
-		_tData = new T[_capacity];
-	}
-	else
-	{
-		for (size_t i = 0; i < _size; ++i)
-		{
-			_tData[i] = T();
-		}
-	}
+	_Destroy_range(&_tData[0], &_tData[_size]);
+
+	_tData = new T[_capacity];
+	
 	_size = 0;
 
 }

@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClCompile Include="CMyVector.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="STLTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMyVector.h" />

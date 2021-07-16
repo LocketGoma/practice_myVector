@@ -1,6 +1,21 @@
 #include "CMyVector.h"
 #include <iostream>
 #include <vector>
+#ifdef _DEBUG
+
+#define _CRTDBG_MAP_ALLOC
+#include <cstdlib>
+#include <crtdbg.h>
+
+
+void DetectLeak(long goToLine = -1)
+{
+	//Also need this for memory leak code stuff
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetBreakAlloc(goToLine); //Important!
+}
+
+#endif // _DEBUG
 
 using namespace std;
 
@@ -30,10 +45,32 @@ public:
 	char _c;
 
 };
+/*
+	T* newData = new T[new_size];
+	size_t replace_size = new_size > _size ? _size : new_size;
+	for (size_t i = 0; i < replace_size; ++i)
+	{
+		newData[i] = std::move(_tData[i]);
+		_tData[i].~T();
+	}
+	delete[] _tData;
+	_tData = newData;
+
+	_size = replace_size;
+	_capacity = new_size;
+
+*/
+
 
 
 int main()
 {
+	#ifdef _DEBUG
+	DetectLeak();
+	#endif // _DEBUG
+	//_CrtSetBreakAlloc(188);
+
+
 	CMyVector<std::string> mVstring;
 	CMyVector<std::string> mVstringB;
 
@@ -43,16 +80,16 @@ int main()
 	mVstring.push_back("abcdg");
 	mVstring.push_back("abcdh");
 	mVstringB.push_back("aaaa");
-	mVstring.insert(mVstring.begin(), "abcdefg");
+	//mVstring.insert(mVstring.begin(), "abcdefg");
 
-	mVstringB = std::move(mVstring);
+	//mVstringB = std::move(mVstring);
 	
-	//mVstring.clear();
-	cout << "size : " << mVstringB.size() << " cap : " << mVstringB.capacity() << endl;
-	for (size_t i = 0; i < mVstringB.size(); ++i)
-	{
-		cout << mVstringB[i] << endl;
-	}
+	mVstring.clear();
+	//cout << "size : " << mVstringB.size() << " cap : " << mVstringB.capacity() << endl;
+	//for (size_t i = 0; i < mVstringB.size(); ++i)
+	//{
+	//	cout << mVstringB[i] << endl;
+	//}
 
 	//CMyVector<CMyVector<int>> mVMaster;
 	//CMyVector<int> mVectorA;
@@ -87,6 +124,8 @@ int main()
 	//mVectorC.push_back(1000);
 	//mVectorC.push_back(1100);
 	//mVectorC.push_back(1200);
+
+	//mVectorC.clear();
 
 	//mVMaster.push_back(mVectorA);
 	//mVMaster.push_back(mVectorB);
@@ -143,8 +182,6 @@ int main()
 	//{
 	//	mVectorB[i].print();
 	//}
-	vector<int> arr;
-	arr.clear();
 
 	return 0;
 }

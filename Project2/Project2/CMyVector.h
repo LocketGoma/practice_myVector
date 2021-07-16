@@ -69,7 +69,7 @@ public:
 	//CMyVector(CMyVector&& other, const Allocator& alloc);		 //9 : Allocator기반이라 무시
 	//10번은 이해못했음 + Allocator 기반이라 패스
 	
-	~CMyVector();
+	~CMyVector() noexcept;
 
 	CMyVector& operator = (const CMyVector& other)
 	{
@@ -92,9 +92,11 @@ public:
 
 	CMyVector& operator = (CMyVector&& other) noexcept
 	{
-		clear();
+		clear();		
 
-		_tData = std::move(other._tData);
+		_tData = other._tData;
+		other._tData = nullptr;
+
 		_size = other._size;
 		_capacity = other._capacity;
 
@@ -151,13 +153,18 @@ public :
 			resize(_capacity << 1);
 		}
 		iterator<T> iter = end();
+		iterator<T> m_iter = end();
+
+		--m_iter;
 
 		while (iter != pos)		//으아악 연산자 순서
 		{
-			memcpy_s(&(*iter), sizeof(T), (&(*(iter))-1), sizeof(T));
+			*iter = *m_iter;
+
+			--m_iter;
 			--iter;
 		}
-		memcpy_s(&(*pos), sizeof(T), &(value), sizeof(T));
+		*pos = T(value);
 
 		++_size;
 
@@ -171,13 +178,18 @@ public :
 			resize(_capacity << 1);
 		}
 		iterator<T> iter = end();
+		iterator<T> m_iter = end();
+
+		--m_iter;
 
 		while (iter != pos)		//으아악 연산자 순서
 		{
-			memcpy_s(&(*iter), sizeof(T), (&(*(iter)) - 1), sizeof(T));
+			*iter = *m_iter;
+
+			--m_iter;
 			--iter;
 		}
-		memcpy_s(&(*pos), sizeof(T), &(value), sizeof(T));
+		*pos = T(value);
 
 		++_size;
 
@@ -317,13 +329,16 @@ inline CMyVector<T>::CMyVector(CMyVector&& other)
 }
 //얘도 고쳐야 하구요
 template<typename T>
-inline CMyVector<T>::~CMyVector()
+inline CMyVector<T>::~CMyVector() noexcept
 {
-	_capacity = 0;
-	_size = 0;
 	if (_tData != nullptr)
-		delete[] _tData;
-
+	{
+		for (size_t i = 0; i < _capacity; ++i)
+		{
+			_tData[i].~T();
+		}
+	}
+	delete[] _tData;
 	_tData = nullptr;
 }
 
@@ -372,16 +387,16 @@ inline void CMyVector<T>::shrink_to_fit()
 template<typename T>
 inline void CMyVector<T>::resize(size_t new_size)
 {
-	T* newData = new T[new_size];
+	T* newData = new T[new_size];					//<<-- 누수 지점. move할때 박살
 	size_t replace_size = new_size > _size ? _size : new_size;
 	for (size_t i = 0; i < replace_size; ++i)
 	{
 		newData[i] = std::move(_tData[i]);
-		//memmove(&newData[i], &_tData[i], sizeof(T));		
+		_tData[i].~T();
 	}
-	//안 지워졌거든?
-	//delete[] _tData;
+	delete[] _tData;
 	_tData = newData;
+	newData = nullptr;
 
 	_size = replace_size;
 	_capacity = new_size;
@@ -401,6 +416,7 @@ inline void CMyVector<T>::resize(size_t new_size, const T& value)
 			{
 				//memmove(&newData[i], &_tData[i], sizeof(T));
 				newData[i] = std::move(_tData[i]);
+				_tData[i].~T();
 			}
 			else
 			{
@@ -416,6 +432,7 @@ inline void CMyVector<T>::resize(size_t new_size, const T& value)
 			newData[i] = std::move(_tData[i]);
 		}
 	}
+	delete[] _tData;
 	_tData = newData;
 
 	_size = new_size;
@@ -443,12 +460,14 @@ inline void CMyVector<T>::swap(CMyVector& other)
 template<typename T>
 inline void CMyVector<T>::clear() noexcept
 {
-	_Destroy_range(&_tData[0], &_tData[_size]);
+	if (_tData != nullptr)
+		_Destroy_range(&_tData[0], &_tData[_size]);
+
+	delete[] _tData;
 
 	_tData = new T[_capacity];
 	
 	_size = 0;
-
 }
 
 template<typename T>

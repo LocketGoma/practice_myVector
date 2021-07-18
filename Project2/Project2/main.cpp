@@ -68,11 +68,12 @@ int main()
 	#ifdef _DEBUG
 	DetectLeak();
 	#endif // _DEBUG
-	//_CrtSetBreakAlloc(188);
+	//_CrtSetBreakAlloc(163);
 
 
 	CMyVector<std::string> mVstring;
 	CMyVector<std::string> mVstringB;
+
 
 	mVstring.push_back("abcd");
 	mVstring.push_back("abcde");
@@ -82,7 +83,7 @@ int main()
 	mVstringB.push_back("aaaa");
 	//mVstring.insert(mVstring.begin(), "abcdefg");
 
-	//mVstringB = std::move(mVstring);
+	mVstringB = std::move(mVstring);
 	
 	mVstring.clear();
 	//cout << "size : " << mVstringB.size() << " cap : " << mVstringB.capacity() << endl;

@@ -75,6 +75,7 @@ public:
 	{
 		clear();
 
+		delete [] _tData;
 		_tData = new T[other._capacity];
 
 		for (size_t i = 0; i < other._capacity; ++i)
@@ -94,14 +95,16 @@ public:
 	{
 		clear();		
 
+		delete[] _tData;
+
 		_tData = other._tData;
 		other._tData = nullptr;
 
 		_size = other._size;
 		_capacity = other._capacity;
 
-		//other.~CMyVector();						//ÀÌ·¡µµ µÊ?
-		other.clear();
+		other.~CMyVector();						//ÀÌ·¡µµ µÊ?
+		//other.clear();
 
 		return *this;
 	} ;		//ÀÌµ¿
@@ -331,6 +334,7 @@ inline CMyVector<T>::CMyVector(CMyVector&& other)
 template<typename T>
 inline CMyVector<T>::~CMyVector() noexcept
 {
+
 	if (_tData != nullptr)
 	{
 		for (size_t i = 0; i < _capacity; ++i)
@@ -462,10 +466,6 @@ inline void CMyVector<T>::clear() noexcept
 {
 	if (_tData != nullptr)
 		_Destroy_range(&_tData[0], &_tData[_size]);
-
-	delete[] _tData;
-
-	_tData = new T[_capacity];
 	
 	_size = 0;
 }

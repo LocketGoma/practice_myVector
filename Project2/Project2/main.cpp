@@ -46,6 +46,9 @@ public:
 
 };
 /*
+template<typename T>
+inline void CMyVector<T>::resize(size_t new_size)
+{
 	T* newData = new T[new_size];
 	size_t replace_size = new_size > _size ? _size : new_size;
 	for (size_t i = 0; i < replace_size; ++i)
@@ -55,9 +58,11 @@ public:
 	}
 	delete[] _tData;
 	_tData = newData;
+	newData = nullptr;
 
 	_size = replace_size;
 	_capacity = new_size;
+
 
 */
 
@@ -80,17 +85,30 @@ int main()
 	mVstring.push_back("abcdf");
 	mVstring.push_back("abcdg");
 	mVstring.push_back("abcdh");
+	CMyVector<std::string> mVstringC(mVstring);
 	mVstringB.push_back("aaaa");
 	//mVstring.insert(mVstring.begin(), "abcdefg");
+	mVstring.erase(mVstring.begin());
 
-	mVstringB = std::move(mVstring);
+	cout << "size : " << mVstring.size() << " cap : " << mVstring.capacity() << endl;
+	cout << "size : " << mVstringC.size() << " cap : " << mVstringC.capacity() << endl;
+	mVstring.shrink_to_fit();
+	cout << "size : " << mVstring.size() << " cap : " << mVstring.capacity() << endl;
+	mVstringC.push_back("bbbb");
+
+	//mVstringB = std::move(mVstring);
 	
-	mVstring.clear();
 	//cout << "size : " << mVstringB.size() << " cap : " << mVstringB.capacity() << endl;
-	//for (size_t i = 0; i < mVstringB.size(); ++i)
-	//{
-	//	cout << mVstringB[i] << endl;
-	//}
+	for (size_t i = 0; i < mVstring.size(); ++i)
+	{
+		cout << mVstring[i] << endl;
+	}
+	cout << "size : " << mVstringC.size() << " cap : " << mVstringC.capacity() << endl;
+	for (size_t i = 0; i < mVstringC.size(); ++i)
+	{
+		cout << mVstringC[i] << endl;
+	}
+	mVstring.clear();
 
 	//CMyVector<CMyVector<int>> mVMaster;
 	//CMyVector<int> mVectorA;

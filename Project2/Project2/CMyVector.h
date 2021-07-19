@@ -83,7 +83,6 @@ public:
 			_tData[i] = T(other._tData[i]);
 		}
 
-		//memcpy_s(_tData, sizeof(T) * other._size, other._tData, sizeof(T) * other._size);
 		_size = other._size;
 		_capacity = other._capacity;
 
@@ -104,7 +103,6 @@ public:
 		_capacity = other._capacity;
 
 		other.~CMyVector();						//이래도 됨?
-		//other.clear();
 
 		return *this;
 	} ;		//이동
@@ -124,7 +122,7 @@ public:
 	T* data() { return _tData; }
 	const T* data() const { return _tData; }
 
-	//열거자 (iterators) - 나중에
+	//열거자 (iterators)
 public:
 	iterator<T> begin() { return iterator<T>(&_tData[0]); };
 	const iterator<T> begin() const { return iterator<T>(&_tData[0]); };
@@ -160,7 +158,7 @@ public :
 
 		--m_iter;
 
-		while (iter != pos)		//으아악 연산자 순서
+		while (iter != pos)		
 		{
 			*iter = *m_iter;
 
@@ -185,7 +183,7 @@ public :
 
 		--m_iter;
 
-		while (iter != pos)		//으아악 연산자 순서
+		while (iter != pos)	
 		{
 			*iter = *m_iter;
 
@@ -209,17 +207,24 @@ public :
 	iterator<T> erase(iterator<T> pos)
 	{
 		iterator<T> iter = begin();
+		iterator<T> m_iter;
 
 		while (iter != pos)
 		{
 			++iter;
 		}
-		*iter = T();
+		(*iter).~T();
+
+		m_iter = iter;
+		++m_iter;
 
 		while (iter != end())
 		{
-			memcpy_s(&(*iter), sizeof(T), (&(*(iter)) + 1), sizeof(T));
+			//memcpy_s(&(*iter), sizeof(T), (&(*(iter)) + 1), sizeof(T));
+			*iter = *m_iter;
+
 			++iter;
+			++m_iter;
 		}
 
 		--_size;
@@ -245,8 +250,6 @@ public :
 	//내부 판단용 함수
 private :
 	bool isFull() { return _capacity == _size; }
-
-
 
 	//메모리 관련
 private:
@@ -296,7 +299,7 @@ inline CMyVector<T>::CMyVector(size_t count)
 //template<typename T>
 //inline CMyVector<T>::CMyVector(T first, T last)
 //{
-//	//보류. 다이나믹 캐스트 쓸까 했는데 그건 너무 노답인거 같음.
+//	//보류
 //}
 
 //6번 생성자 - 복사 생성
@@ -310,7 +313,7 @@ inline CMyVector<T>::CMyVector(const CMyVector& other)
 
 	for (size_t i = 0; i < _size; ++i)
 	{
-		memcpy(_tData[i],other._tData[i], sizeof(T));
+		_tData[i] = T(other._tData[i]);
 	}
 
 }
@@ -323,10 +326,10 @@ inline CMyVector<T>::CMyVector(CMyVector&& other)
 
 	for (size_t i = 0; i < _size; ++i)
 	{
-		memmove(_tData[i], other._tData[i], sizeof(T));
+		_tData[i] = T(other._tData[i]);
 	}
 
-	delete[] other._tData;
+	other.clear();
 	other._size = 0;
 
 }
@@ -356,9 +359,12 @@ inline void CMyVector<T>::reserve(size_t new_cap)
 
 	T* newData = new T[new_cap];
 
-	memcpy_s(newData, sizeof(T) * _capacity, _tData, sizeof(T) * _capacity);
+	for (size_t i = 0; i < _size; ++i)
+	{
+		newData[i] = T(_tData[i]);
+	}
 
-	delete[] _tData;			//?
+	delete[] _tData;
 
 	_tData = newData;
 
@@ -377,10 +383,12 @@ inline void CMyVector<T>::shrink_to_fit()
 	T* newData = new T[_size];
 
 	//newData = malloc(sizeof(T) * new_cap);
+	for (size_t i = 0; i < _size; ++i)
+	{
+		newData[i] = T(_tData[i]);
+	}
 
-	memcpy_s(newData, sizeof(T) * _size, _tData, sizeof(T) * _size);
-
-	delete[] _tData;			//?
+	delete[] _tData;
 
 	_tData = newData;
 
@@ -391,7 +399,7 @@ inline void CMyVector<T>::shrink_to_fit()
 template<typename T>
 inline void CMyVector<T>::resize(size_t new_size)
 {
-	T* newData = new T[new_size];					//<<-- 누수 지점. move할때 박살
+	T* newData = new T[new_size];
 	size_t replace_size = new_size > _size ? _size : new_size;
 	for (size_t i = 0; i < replace_size; ++i)
 	{
@@ -465,7 +473,13 @@ template<typename T>
 inline void CMyVector<T>::clear() noexcept
 {
 	if (_tData != nullptr)
-		_Destroy_range(&_tData[0], &_tData[_size]);
+	{
+		for (size_t i = 0; i < _size; ++i)
+		{
+			//_Destroy_range(&_tData[0], &_tData[_size]);  //써도되나 싶으면 물어보고 쓸것
+			_tData[i].~T();
+		}
+	}
 	
 	_size = 0;
 }

@@ -2,6 +2,7 @@
 using namespace std;
 
 #include <xmemory>
+#include <iostream>
 
 template <typename T>
 class CMyVector
@@ -284,6 +285,12 @@ inline CMyVector<T>::CMyVector(CMyVector&& other)
 template<typename T>
 inline CMyVector<T>::~CMyVector() noexcept
 {
+	for (size_t i = 0; i < _size; ++i)
+	{
+		_tData[i].~T();
+	}
+	free(_tData);
+
 }
 
 
@@ -292,7 +299,11 @@ inline void CMyVector<T>::reserve(size_t new_cap)
 {
 	if (_tData == nullptr)
 	{
-		_tData = static_cast<T *>(malloc(new_cap * sizeof(T)));
+		std::cout << new_cap * sizeof(T) << std::endl;
+
+		
+		_tData = static_cast<T*>(malloc(new_cap * sizeof(T)));
+		
 	}
 }
 
@@ -341,7 +352,7 @@ inline void CMyVector<T>::resize(size_t new_size)
 			_tData[i].~T();
 		}
 	}
-	delete[] _tData;
+	free(_tData);
 
 	_tData = newCap;
 
@@ -425,9 +436,9 @@ inline void CMyVector<T>::push_back(const T& value)
 	if (_capacity == _size)
 	{
 		resize(_capacity * 2);
-		_capacity << 1;
+		_capacity = _capacity << 1;
 	}
-	_tData[_size] = new (_tData[size])T(value);
+	new (&_tData[_size])T(value);
 	++_size;
 }
 
@@ -437,9 +448,12 @@ inline void CMyVector<T>::push_back(T&& value)
 	if (_capacity == _size)
 	{
 		resize(_capacity * 2);
-		_capacity << 1;
+		_capacity = _capacity << 1;
 	}
-	_tData[_size] = value;
+	//_tData[_size] = value;
+	new (&_tData[_size])T(value);
+
+
 	++_size;
 }
 

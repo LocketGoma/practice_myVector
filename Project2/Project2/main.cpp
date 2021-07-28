@@ -1,5 +1,6 @@
 #include "CMyVector.h"
 #include <iostream>
+#include <string>
 #include <vector>
 #ifdef _DEBUG
 
@@ -70,17 +71,36 @@ inline void CMyVector<T>::resize(size_t new_size)
 
 int main()
 {
+	DetectLeak();
+
 	CMyVector<int> vec;
 	vec.push_back(1);
 	vec.push_back(2);
 	vec.push_back(3);
 
-	cout << vec.size() << "," << vec.capacity() << endl;
-	for (size_t i = 0; i < vec.size(); ++i)
-	{
-		cout << i << ":" << vec[i] << endl;
-	}
+	//cout << vec.size() << "," << vec.capacity() << endl;
+	//for (size_t i = 0; i < vec.size(); ++i)
+	//{
+	//	cout << i << ":" << vec[i] << endl;
+	//}
 
+	cout << sizeof(string) << endl;
+
+	CMyVector<string> vString;
+
+	//vector<string> vS;
+	//vS.reserve(10);
+	//vS.push_back("AAA");
+
+	string st = "AAA";
+
+	vString.push_back(st);
+	vString.push_back("BBB");
+	cout << vString.size() << "," << vString.capacity() << endl;
+	for (size_t i = 0; i < vString.size(); ++i)
+	{
+		cout << i << ":" << vString[i] << endl;
+	}
 	return 0;
 }
 

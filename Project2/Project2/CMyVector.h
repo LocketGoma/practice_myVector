@@ -1,9 +1,7 @@
 #pragma once
-
-#include <string>
-#include <xmemory>
-
 using namespace std;
+
+#include <xmemory>
 
 template <typename T>
 class CMyVector
@@ -73,15 +71,7 @@ public:
 
 	CMyVector& operator = (const CMyVector& other)
 	{
-		clear();
 
-		delete [] _tData;
-		_tData = new T[other._capacity];
-
-		for (size_t i = 0; i < other._capacity; ++i)
-		{
-			_tData[i] = T(other._tData[i]);
-		}
 
 		_size = other._size;
 		_capacity = other._capacity;
@@ -92,17 +82,12 @@ public:
 
 	CMyVector& operator = (CMyVector&& other) noexcept
 	{
-		clear();		
 
-		delete[] _tData;
-
-		_tData = other._tData;
-		other._tData = nullptr;
 
 		_size = other._size;
 		_capacity = other._capacity;
 
-		other.~CMyVector();						//이래도 됨?
+
 
 		return *this;
 	} ;		//이동
@@ -220,7 +205,6 @@ public :
 
 		while (iter != end())
 		{
-			//memcpy_s(&(*iter), sizeof(T), (&(*(iter)) + 1), sizeof(T));
 			*iter = *m_iter;
 
 			++iter;
@@ -239,11 +223,9 @@ public :
 	void push_back(T&& value);				//move
 	void pop_back();
 
-	//https://stackoverflow.com/questions/58881357/how-to-create-an-emplace-back-method
 	template<typename... Args>
 	void emplace_back(Args&&... args)
 	{
-		//push_back(T(std::forward<Args>(args)...)); //더 확실한것
 		push_back(T(args...));
 	}
 
@@ -259,196 +241,152 @@ private:
 		
 	static const size_t Default_size = 1;
 };
-//1번 생성자
+
+
 template<typename T>
 inline CMyVector<T>::CMyVector()
 {
 	_capacity = Default_size;
 	_size = 0;
-	_tData = new T[Default_size];
+	reserve(_capacity);
 }
 
-//3번 생성자
 template<typename T>
 inline CMyVector<T>::CMyVector(size_t count, const T& value)
 {
 	_capacity = count;
-	_size = count;
+	reserve(_capacity);
 
-	_tData = new T[_capacity];
-
-	//수정 필요
-	for (size_t i = 0; i < _size; ++i)
+	for (size_t i = 0; i < _capacity; ++i)
 	{
-		_tData[i] = value;
+		_tData[i] = new (&_tData[i]) T(value);
 	}
-
-
 }
-//4번 생성자
+
 template<typename T>
 inline CMyVector<T>::CMyVector(size_t count)
 {
 	_capacity = count;
 	_size = 0;
-	_tData = new T[_capacity];
-
+	reserve(_capacity);
 }
 
-//5번 생성자
-//template<typename T>
-//inline CMyVector<T>::CMyVector(T first, T last)
-//{
-//	//보류
-//}
-
-//6번 생성자 - 복사 생성
 template<typename T>
 inline CMyVector<T>::CMyVector(const CMyVector& other)
 {
-	_capacity = other._capacity;
-	_size = other._size;
-
-	_tData = new T[_capacity];
-
-	for (size_t i = 0; i < _size; ++i)
-	{
-		_tData[i] = T(other._tData[i]);
-	}
-
 }
 
-//8번 생성자 - 이동 생성
 template<typename T>
 inline CMyVector<T>::CMyVector(CMyVector&& other)
 {
-	_tData = new T[_capacity];
-
-	for (size_t i = 0; i < _size; ++i)
-	{
-		_tData[i] = T(other._tData[i]);
-	}
-
-	other.clear();
-	other._size = 0;
-
 }
-//얘도 고쳐야 하구요
+
 template<typename T>
 inline CMyVector<T>::~CMyVector() noexcept
 {
-
-	if (_tData != nullptr)
-	{
-		for (size_t i = 0; i < _capacity; ++i)
-		{
-			_tData[i].~T();
-		}
-	}
-	delete[] _tData;
-	_tData = nullptr;
 }
+
 
 template<typename T>
 inline void CMyVector<T>::reserve(size_t new_cap)
 {
-	if (_capacity >= new_cap)
+	if (_tData == nullptr)
 	{
-		return;
+		_tData = static_cast<T *>(malloc(new_cap * sizeof(T)));
 	}
-
-	T* newData = new T[new_cap];
-
-	for (size_t i = 0; i < _size; ++i)
-	{
-		newData[i] = T(_tData[i]);
-	}
-
-	delete[] _tData;
-
-	_tData = newData;
-
-	_capacity = new_cap;
-
 }
 
 template<typename T>
 inline void CMyVector<T>::shrink_to_fit()
 {
-	if (_capacity == _size)
-	{
-		return;
-	}
+	T* newCap = malloc(_size * sizeof(T));
 
-	T* newData = new T[_size];
-
-	//newData = malloc(sizeof(T) * new_cap);
 	for (size_t i = 0; i < _size; ++i)
 	{
-		newData[i] = T(_tData[i]);
+		newCap[i] = new (newCap[i]) T(_tData[i]);
+		_tData[i].~T();
 	}
-
+	
 	delete[] _tData;
 
-	_tData = newData;
-
-	_capacity = _size;
-
+	_tData = newCap;
 }
-//리사이즈 꼭 고쳐야하구요
+
 template<typename T>
 inline void CMyVector<T>::resize(size_t new_size)
 {
-	T* newData = new T[new_size];
-	size_t replace_size = new_size > _size ? _size : new_size;
-	for (size_t i = 0; i < replace_size; ++i)
+	if (new_size == _capacity)
+		return;
+
+	T* newCap = static_cast<T*>(malloc(new_size * sizeof(T)));
+
+	if (new_size > _capacity)
 	{
-		newData[i] = std::move(_tData[i]);
-		_tData[i].~T();
+		for (size_t i = 0; i < _size; ++i)
+		{
+			new (&newCap[i]) T(_tData[i]);
+			_tData[i].~T();
+		}
+
+	}
+	else
+	{
+		for (size_t i = 0; i < new_size; ++i)
+		{
+			new (&newCap[i]) T(_tData[i]);
+			_tData[i].~T();
+		}
+		for (size_t i = new_size; i < _size; ++i)
+		{
+			_tData[i].~T();
+		}
 	}
 	delete[] _tData;
-	_tData = newData;
-	newData = nullptr;
 
-	_size = replace_size;
-	_capacity = new_size;
+	_tData = newCap;
 
 }
 
 template<typename T>
 inline void CMyVector<T>::resize(size_t new_size, const T& value)
 {
-	T* newData = new T[new_size];
-	
-	if (new_size > _size)
+	if (new_size == _capacity)
+		return;
+
+	_capacity = new_size;
+
+	T* newCap = malloc(new_size * sizeof(T));
+
+	if (new_size > _capacity)
 	{
-		for (size_t i = 0; i < new_size; ++i)
+		for (size_t i = 0; i < _size; ++i)
 		{
-			if (i < _size)
-			{
-				//memmove(&newData[i], &_tData[i], sizeof(T));
-				newData[i] = std::move(_tData[i]);
-				_tData[i].~T();
-			}
-			else
-			{
-				//memmove(&newData[i], &value, sizeof(T));
-				newData[i] = value;
-			}
+			newCap[i] = new (newCap[i]) T(_tData[i]);
+			_tData[i].~T();
+		}
+		for (size_t i = _size; i < new_size; ++i)
+		{
+			_tData[i] = new (newCap[i]) T(value);
 		}
 	}
 	else
 	{
 		for (size_t i = 0; i < new_size; ++i)
 		{
-			newData[i] = std::move(_tData[i]);
+			newCap[i] = new (newCap[i]) T(_tData[i]);
+			_tData[i].~T();
 		}
+		for (size_t i = new_size; i < _size; ++i)
+		{
+			_tData[i].~T();
+		}
+
+		_size = new_size;
 	}
 	delete[] _tData;
-	_tData = newData;
 
-	_size = new_size;
-	_capacity = new_size;
+	_tData = newCap;
+	
 }
 
 template<typename T>
@@ -467,21 +405,18 @@ inline void CMyVector<T>::swap(CMyVector& other)
 	other._capacity = tempCapacity;
 
 	temp = nullptr;
+
 }
 
 template<typename T>
 inline void CMyVector<T>::clear() noexcept
 {
-	if (_tData != nullptr)
+	for (size_t i = 0; i < _size; ++i)
 	{
-		for (size_t i = 0; i < _size; ++i)
-		{
-			//_Destroy_range(&_tData[0], &_tData[_size]);  //써도되나 싶으면 물어보고 쓸것
-			_tData[i].~T();
-		}
+		_tData[i].~T();
 	}
-	
 	_size = 0;
+
 }
 
 template<typename T>
@@ -490,12 +425,10 @@ inline void CMyVector<T>::push_back(const T& value)
 	if (_capacity == _size)
 	{
 		resize(_capacity * 2);
-		_capacity << 1;	
+		_capacity << 1;
 	}
-	_tData[_size] = value;
-	//memmove(&_tData[_size], &value, sizeof(T));
+	_tData[_size] = new (_tData[size])T(value);
 	++_size;
-
 }
 
 template<typename T>
@@ -506,7 +439,6 @@ inline void CMyVector<T>::push_back(T&& value)
 		resize(_capacity * 2);
 		_capacity << 1;
 	}
-
 	_tData[_size] = value;
 	++_size;
 }
@@ -518,8 +450,7 @@ inline void CMyVector<T>::pop_back()
 	{
 		return;
 	}
-	_tData[_size - 1] = T();
-
+	_tData[_size-1].~T();
 	--_size;
 
 }

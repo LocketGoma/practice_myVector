@@ -70,140 +70,157 @@ inline void CMyVector<T>::resize(size_t new_size)
 
 int main()
 {
-	#ifdef _DEBUG
-	DetectLeak();
-	#endif // _DEBUG
-	//_CrtSetBreakAlloc(163);
+	CMyVector<int> vec;
+	vec.push_back(1);
+	vec.push_back(2);
+	vec.push_back(3);
 
-
-	CMyVector<std::string> mVstring;
-	CMyVector<std::string> mVstringB;
-
-
-	mVstring.push_back("abcd");
-	mVstring.push_back("abcde");
-	mVstring.push_back("abcdf");
-	mVstring.push_back("abcdg");
-	mVstring.push_back("abcdh");
-	CMyVector<std::string> mVstringC(mVstring);
-	mVstringB.push_back("aaaa");
-	//mVstring.insert(mVstring.begin(), "abcdefg");
-	mVstring.erase(mVstring.begin());
-
-	cout << "size : " << mVstring.size() << " cap : " << mVstring.capacity() << endl;
-	cout << "size : " << mVstringC.size() << " cap : " << mVstringC.capacity() << endl;
-	mVstring.shrink_to_fit();
-	cout << "size : " << mVstring.size() << " cap : " << mVstring.capacity() << endl;
-	mVstringC.push_back("bbbb");
-
-	//mVstringB = std::move(mVstring);
-	
-	//cout << "size : " << mVstringB.size() << " cap : " << mVstringB.capacity() << endl;
-	for (size_t i = 0; i < mVstring.size(); ++i)
+	cout << vec.size() << "," << vec.capacity() << endl;
+	for (size_t i = 0; i < vec.size(); ++i)
 	{
-		cout << mVstring[i] << endl;
+		cout << i << ":" << vec[i] << endl;
 	}
-	cout << "size : " << mVstringC.size() << " cap : " << mVstringC.capacity() << endl;
-	for (size_t i = 0; i < mVstringC.size(); ++i)
-	{
-		cout << mVstringC[i] << endl;
-	}
-	mVstring.clear();
-
-	//CMyVector<CMyVector<int>> mVMaster;
-	//CMyVector<int> mVectorA;
-	//CMyVector<int> mVectorB;
-	//CMyVector<int> mVectorC;
-
-	////mVMaster.reserve(8);
-
-	//mVectorA.push_back(10);
-	//mVectorA.push_back(20);
-	//mVectorA.push_back(30);
-	//mVectorA.push_back(40);
-
-	//mVectorB.push_back(1);
-	//mVectorB.push_back(2);
-	//mVectorB.push_back(3);
-	//mVectorB.push_back(4);
-	//mVectorB.push_back(5);
-	//mVectorB.push_back(6);
-	//mVectorB.push_back(7);
-	//mVectorB.push_back(8);
-
-	//mVectorC.push_back(100);
-	//mVectorC.push_back(200);
-	//mVectorC.push_back(300);
-	//mVectorC.push_back(400);
-	//mVectorC.push_back(500);
-	//mVectorC.push_back(600);
-	//mVectorC.push_back(700);
-	//mVectorC.push_back(800);
-	//mVectorC.push_back(900);
-	//mVectorC.push_back(1000);
-	//mVectorC.push_back(1100);
-	//mVectorC.push_back(1200);
-
-	//mVectorC.clear();
-
-	//mVMaster.push_back(mVectorA);
-	//mVMaster.push_back(mVectorB);
-	//mVMaster.push_back(mVectorC);
-	//mVMaster.resize(5,mVectorC);
-
-	//cout << mVMaster[0][0] << endl;
-	//cout << mVMaster[1][1] << endl;
-	//cout << mVMaster[2][10] << endl;
-	//cout << mVMaster[4][10] << endl;
-	//mVMaster[4][1] = 1;
-	//cout << mVMaster[2][1] << endl;
-	//cout << mVMaster[4][1] << endl;
-	//mVMaster.resize(2);
-
-	//CMyVector<TestType> mVector;
-	//CMyVector<TestType> mVectorB;
-
-	//cout << "size : " << mVector.size() << " cap : " << mVector.capacity() << endl;
-
-	////mVector.reserve(12);
-
-	//mVector.emplace_back(1, 1, 'a');
-	//mVector.emplace_back(1, 2, 'b');
-	//mVector.emplace_back(1, 3, 'c');
-	//mVector.emplace_back(1, 4, 'd');
-
-	//cout << "size : " << mVector.size() << " cap : " << mVector.capacity() << endl;
-	//for (size_t i = 0; i < mVector.size(); ++i)
-	//{
-	//	mVector[i].print();
-	//}
-	//mVector.push_back(TestType(1,5,'e'));
-	//cout << "size : " << mVector.size() << " cap : " << mVector.capacity() << endl;
-	//for (size_t i = 0; i < mVector.size(); ++i)
-	//{
-	//	mVector[i].print();
-	//}
-	//mVectorB = mVector;
-
-	//mVector.clear();
-
-	//cout << "size : " << mVector.size() << " cap : " << mVector.capacity() << endl;
-	//mVector.emplace_back(1, 2, 'b');
-	//mVector.emplace_back(1, 3, 'c');
-	//mVector.emplace_back(1, 4, 'd');
-	//cout << "size : " << mVector.size() << " cap : " << mVector.capacity() << endl;
-	//for (size_t i = 0; i < mVector.size(); ++i)
-	//{
-	//	mVector[i].print();
-	//}
-	//cout << "size : " << mVectorB.size() << " cap : " << mVectorB.capacity() << endl;
-	//for (size_t i = 0; i < mVectorB.size(); ++i)
-	//{
-	//	mVectorB[i].print();
-	//}
 
 	return 0;
 }
+
+//
+//int main()
+//{
+//	#ifdef _DEBUG
+//	DetectLeak();
+//	#endif // _DEBUG
+//	//_CrtSetBreakAlloc(163);
+//
+//
+//	CMyVector<std::string> mVstring;
+//	CMyVector<std::string> mVstringB;
+//
+//
+//	mVstring.push_back("abcd");
+//	mVstring.push_back("abcde");
+//	mVstring.push_back("abcdf");
+//	mVstring.push_back("abcdg");
+//	mVstring.push_back("abcdh");
+//	CMyVector<std::string> mVstringC(mVstring);
+//	mVstringB.push_back("aaaa");
+//	//mVstring.insert(mVstring.begin(), "abcdefg");
+//	mVstring.erase(mVstring.begin());
+//
+//	cout << "size : " << mVstring.size() << " cap : " << mVstring.capacity() << endl;
+//	cout << "size : " << mVstringC.size() << " cap : " << mVstringC.capacity() << endl;
+//	mVstring.shrink_to_fit();
+//	cout << "size : " << mVstring.size() << " cap : " << mVstring.capacity() << endl;
+//	mVstringC.push_back("bbbb");
+//
+//	//mVstringB = std::move(mVstring);
+//	
+//	//cout << "size : " << mVstringB.size() << " cap : " << mVstringB.capacity() << endl;
+//	for (size_t i = 0; i < mVstring.size(); ++i)
+//	{
+//		cout << mVstring[i] << endl;
+//	}
+//	cout << "size : " << mVstringC.size() << " cap : " << mVstringC.capacity() << endl;
+//	for (size_t i = 0; i < mVstringC.size(); ++i)
+//	{
+//		cout << mVstringC[i] << endl;
+//	}
+//	mVstring.clear();
+//
+//	//CMyVector<CMyVector<int>> mVMaster;
+//	//CMyVector<int> mVectorA;
+//	//CMyVector<int> mVectorB;
+//	//CMyVector<int> mVectorC;
+//
+//	////mVMaster.reserve(8);
+//
+//	//mVectorA.push_back(10);
+//	//mVectorA.push_back(20);
+//	//mVectorA.push_back(30);
+//	//mVectorA.push_back(40);
+//
+//	//mVectorB.push_back(1);
+//	//mVectorB.push_back(2);
+//	//mVectorB.push_back(3);
+//	//mVectorB.push_back(4);
+//	//mVectorB.push_back(5);
+//	//mVectorB.push_back(6);
+//	//mVectorB.push_back(7);
+//	//mVectorB.push_back(8);
+//
+//	//mVectorC.push_back(100);
+//	//mVectorC.push_back(200);
+//	//mVectorC.push_back(300);
+//	//mVectorC.push_back(400);
+//	//mVectorC.push_back(500);
+//	//mVectorC.push_back(600);
+//	//mVectorC.push_back(700);
+//	//mVectorC.push_back(800);
+//	//mVectorC.push_back(900);
+//	//mVectorC.push_back(1000);
+//	//mVectorC.push_back(1100);
+//	//mVectorC.push_back(1200);
+//
+//	//mVectorC.clear();
+//
+//	//mVMaster.push_back(mVectorA);
+//	//mVMaster.push_back(mVectorB);
+//	//mVMaster.push_back(mVectorC);
+//	//mVMaster.resize(5,mVectorC);
+//
+//	//cout << mVMaster[0][0] << endl;
+//	//cout << mVMaster[1][1] << endl;
+//	//cout << mVMaster[2][10] << endl;
+//	//cout << mVMaster[4][10] << endl;
+//	//mVMaster[4][1] = 1;
+//	//cout << mVMaster[2][1] << endl;
+//	//cout << mVMaster[4][1] << endl;
+//	//mVMaster.resize(2);
+//
+//	//CMyVector<TestType> mVector;
+//	//CMyVector<TestType> mVectorB;
+//
+//	//cout << "size : " << mVector.size() << " cap : " << mVector.capacity() << endl;
+//
+//	////mVector.reserve(12);
+//
+//	//mVector.emplace_back(1, 1, 'a');
+//	//mVector.emplace_back(1, 2, 'b');
+//	//mVector.emplace_back(1, 3, 'c');
+//	//mVector.emplace_back(1, 4, 'd');
+//
+//	//cout << "size : " << mVector.size() << " cap : " << mVector.capacity() << endl;
+//	//for (size_t i = 0; i < mVector.size(); ++i)
+//	//{
+//	//	mVector[i].print();
+//	//}
+//	//mVector.push_back(TestType(1,5,'e'));
+//	//cout << "size : " << mVector.size() << " cap : " << mVector.capacity() << endl;
+//	//for (size_t i = 0; i < mVector.size(); ++i)
+//	//{
+//	//	mVector[i].print();
+//	//}
+//	//mVectorB = mVector;
+//
+//	//mVector.clear();
+//
+//	//cout << "size : " << mVector.size() << " cap : " << mVector.capacity() << endl;
+//	//mVector.emplace_back(1, 2, 'b');
+//	//mVector.emplace_back(1, 3, 'c');
+//	//mVector.emplace_back(1, 4, 'd');
+//	//cout << "size : " << mVector.size() << " cap : " << mVector.capacity() << endl;
+//	//for (size_t i = 0; i < mVector.size(); ++i)
+//	//{
+//	//	mVector[i].print();
+//	//}
+//	//cout << "size : " << mVectorB.size() << " cap : " << mVectorB.capacity() << endl;
+//	//for (size_t i = 0; i < mVectorB.size(); ++i)
+//	//{
+//	//	mVectorB[i].print();
+//	//}
+//
+//	return 0;
+//}
 
 void regacyB(){
 	CMyVector<int> mvector;
